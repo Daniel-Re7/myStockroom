@@ -21,7 +21,7 @@ void remove_stock_window::on_confirm_remove_button_clicked()
     QString dpci = ui->remove_dpci_edit->text();
     QString location = ui->remove_loc_edit->text();
     QString dept = ui->remove_dept_input->currentText();
-    QString amount = ui->remove_amount_edit->text();
+    QString removeAmount = ui->remove_amount_edit->text();
 
     QSqlQuery checkQ;
     checkQ.exec("SELECT * FROM stockroom WHERE Dept='" + dept + "' AND DPCI='" + dpci + "' AND Location ='" + location+ "'");
@@ -34,14 +34,17 @@ void remove_stock_window::on_confirm_remove_button_clicked()
        QMessageBox msg;
        msg.information(this,tr("Warning"), tr("Please select department"));
     }
+
     //Check if valid DPCI Code
+    //Basic check for now...
+    //TODO: Add regex for checking format
     else if(!dpci.toInt() || dpci.isNull())
     {
        QMessageBox msg;
        msg.information(this,tr("Warning"), tr("Invalid DPCI"));
     }
     //Make sure quantity is not null or zero
-    else if(amount.toInt() <= 0 || amount.isNull())
+    else if(removeAmount.toInt() <= 0 || removeAmount.isNull())
     {
        QMessageBox msg;
        msg.information(this,tr("Warning"), tr("Invalid amount to remove"));
@@ -54,39 +57,64 @@ void remove_stock_window::on_confirm_remove_button_clicked()
         msg.information(this,tr("Warning"), tr("No stock found"));
     }
 
-    //See if trying to take out too much
-    else if(quanAmount.toInt() < amount.toInt())
+    //See if trying to remove more stock than is available
+    else if(quanAmount.toInt() < removeAmount.toInt())
     {
         QMessageBox msg;
         msg.information(this,"Warning",QString("Trying to take out more than is in stock. There is %1 in location").arg(quanAmount));
     }
+
     else
     {
-        if((quanAmount.toInt() - amount.toInt()) == 0)
+        //If removal makes item count == 0 then delete from database
+        if((quanAmount.toInt() - removeAmount.toInt()) == 0)
         {
-            QSqlQuery deleteQuery;
-            deleteQuery.exec("DELETE from stockroom WHERE Dept='" + dept + "' AND DPCI='" + dpci + "' AND Location ='" + location+ "'");
+            QSqlQuery removeQuery;
+            removeQuery.exec("DELETE from stockroom WHERE Dept='" + dept + "' AND DPCI='" + dpci + "' AND Location ='" + location+ "'");
             qDebug() << "Stock removed from Database";
-            this->close();
+
         }
+
+        //Else update the new count for the item DPCI
         else
         {
-            int tempQuant = quanAmount.toInt();
-            QSqlQuery deleteQuery;
-            tempQuant -= amount.toInt();
-            QString new_quantity;
-            new_quantity = QString::number(tempQuant);
-            deleteQuery.exec("DELETE from stockroom WHERE Dept='" + dept + "' AND DPCI='" + dpci + "' AND Location ='" + location+ "'");
-            QSqlQuery query;
-            query.prepare("INSERT INTO stockroom(Dept, DPCI, Quantity, Location) VALUES (:dept, :dpci, :quantity, :location)");
-            query.bindValue(":dept", dept);
-            query.bindValue(":dpci", dpci);
-            query.bindValue(":quantity", new_quantity);
-            query.bindValue(":location", location);
-            query.exec();
+            QSqlQuery removeQuery;
+            removeQuery.exec("UPDATE stockroom SET Quantity=Quantity-" + removeAmount + " WHERE DPCI='" + dpci +"'");
             qDebug() << "Stock removed from Database";
+
+        }
+
+        //Check to see if item exists in replenishment database
+        QSqlQuery replenish;
+        replenish.exec("SELECT * FROM replenishment WHERE DPCI='" + dpci +"'");
+
+        //If it does then update the count
+        if(replenish.size() != 0)
+        {
+            QSqlQuery update_replenish;
+            update_replenish.exec("UPDATE replenishment SET Quantity=Quantity+" + removeAmount + " WHERE DPCI='" + dpci +"'");
+            qDebug() << "Replenishment database updated";
+            this->close();
+
+        }
+
+        //Else the item is unique; so add to replenishment table
+        else
+        {
+            QSqlQuery add_replenish;
+            add_replenish.prepare("INSERT INTO replenishment(DPCI,Quantity) VALUES (:dpci,:quantity)");
+            add_replenish.bindValue(":dpci", dpci);
+            add_replenish.bindValue(":quantity",removeAmount);
+            add_replenish.exec();
+            qDebug() << "Item added to Replenishment Database";
             this->close();
         }
     }
 
+}
+
+
+void remove_stock_window::on_remove_stock_back_button_clicked()
+{
+    this->close();
 }

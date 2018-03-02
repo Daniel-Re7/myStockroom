@@ -37,4 +37,5 @@ HEADERS += \
 FORMS += \
         stock_portal.ui \
     add_stock_window.ui \
-    remove_stock_window.ui
+    remove_stock_window.ui \
+    replenishment_window.ui
