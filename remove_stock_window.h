@@ -18,6 +18,8 @@ public:
 private slots:
     void on_confirm_remove_button_clicked();
 
+    void on_remove_stock_back_button_clicked();
+
 private:
     Ui::remove_stock_window *ui;
 };

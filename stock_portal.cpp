@@ -35,7 +35,7 @@ stock_portal::~stock_portal()
 
 void stock_portal::on_add_stock_button_clicked()
 {
-    qDebug() << "Entering Add Stock App";
+    qDebug() << "Entering Add Stock App...";
     add_stock = new add_stock_window(this);
     add_stock->exec();
 
@@ -43,7 +43,12 @@ void stock_portal::on_add_stock_button_clicked()
 
 void stock_portal::on_remove_stock_button_clicked()
 {
-    qDebug() << "Entering Remove Stock App";
+    qDebug() << "Entering Remove Stock App...";
     remove_stock = new remove_stock_window(this);
     remove_stock->exec();
+}
+
+void stock_portal::on_replenish_button_clicked()
+{
+    qDebug() << "Entering Replenishment App...";
 }

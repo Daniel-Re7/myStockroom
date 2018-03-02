@@ -18,6 +18,8 @@ public:
 private slots:
     void on_update_stock_button1_clicked();
 
+    void on_add_stock_back_button_clicked();
+
 private:
     Ui::add_stock_window *ui;
 };

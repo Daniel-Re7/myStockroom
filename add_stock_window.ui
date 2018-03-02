@@ -160,8 +160,8 @@
     <rect>
      <x>540</x>
      <y>460</y>
-     <width>80</width>
-     <height>21</height>
+     <width>91</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
@@ -189,6 +189,19 @@
      <width>113</width>
      <height>21</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="add_stock_back_button">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>460</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;-- Back</string>
    </property>
   </widget>
  </widget>
