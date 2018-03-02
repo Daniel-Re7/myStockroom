@@ -26,12 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         stock_portal.cpp \
-    add_stock_window.cpp
+    add_stock_window.cpp \
+    remove_stock_window.cpp
 
 HEADERS += \
         stock_portal.h \
-    add_stock_window.h
+    add_stock_window.h \
+    remove_stock_window.h
 
 FORMS += \
         stock_portal.ui \
-    add_stock_window.ui
+    add_stock_window.ui \
+    remove_stock_window.ui

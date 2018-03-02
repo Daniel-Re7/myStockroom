@@ -40,3 +40,10 @@ void stock_portal::on_add_stock_button_clicked()
     add_stock->exec();
 
 }
+
+void stock_portal::on_remove_stock_button_clicked()
+{
+    qDebug() << "Entering Remove Stock App";
+    remove_stock = new remove_stock_window(this);
+    remove_stock->exec();
+}

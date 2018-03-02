@@ -5,6 +5,7 @@
 #include <QTSQL>
 #include <QDebug>
 #include "add_stock_window.h"
+#include "remove_stock_window.h"
 
 namespace Ui {
 class stock_portal;
@@ -21,9 +22,12 @@ public:
 private slots:
     void on_add_stock_button_clicked();
 
+    void on_remove_stock_button_clicked();
+
 private:
     Ui::stock_portal *ui;
     add_stock_window *add_stock;
+    remove_stock_window *remove_stock;
 };
 
 #endif // STOCK_PORTAL_H

@@ -44,6 +44,25 @@ void add_stock_window::on_update_stock_button1_clicked()
 
     else
     {
+       int _recordAmount = 0;
+       QSqlQuery checkExist;
+       checkExist.exec("SELECT Quantity FROM stockroom WHERE Dept='" + dept + "' AND DPCI='" + dpci + "' AND Location ='" + location+ "'");
+       while(checkExist.next())
+       {
+           _recordAmount += checkExist.value("Quantity").toInt();
+       }
+
+       //If item already exists in location and dept, update total count
+       if(_recordAmount != 0)
+       {
+           int tempQuant = quantity.toInt();
+           QSqlQuery deleteQuery;
+           tempQuant += _recordAmount;
+           quantity = QString::number(tempQuant);
+           deleteQuery.exec("DELETE from stockroom WHERE Dept='" + dept + "' AND DPCI='" + dpci + "' AND Location ='" + location+ "'");
+
+       }
+
        //Query item into the database
        QSqlQuery query;
        query.prepare("INSERT INTO stockroom(Dept, DPCI, Quantity, Location) VALUES (:dept, :dpci, :quantity, :location)");
@@ -53,8 +72,9 @@ void add_stock_window::on_update_stock_button1_clicked()
        query.bindValue(":location", location);
        query.exec();
        qDebug() << "Stock Added to Database";
-
        this->close();
     }
+
+    ///
 
 }
