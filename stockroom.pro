@@ -27,12 +27,16 @@ SOURCES += \
         main.cpp \
         stock_portal.cpp \
     add_stock_window.cpp \
-    remove_stock_window.cpp
+    remove_stock_window.cpp \
+    replenishment_window.cpp \
+    login.cpp
 
 HEADERS += \
         stock_portal.h \
     add_stock_window.h \
-    remove_stock_window.h
+    remove_stock_window.h \
+    replenishment_window.h \
+    login.h
 
 FORMS += \
         stock_portal.ui \

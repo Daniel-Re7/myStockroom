@@ -3,6 +3,7 @@
 #include "stock_portal.h"
 #include <QSqlDatabase>
 #include <QMessageBox>
+#include "login.h"
 
 add_stock_window::add_stock_window(QWidget *parent) :
     QDialog(parent),
@@ -18,6 +19,9 @@ add_stock_window::~add_stock_window()
 
 void add_stock_window::on_update_stock_button1_clicked()
 {
+    login connection;
+    connection.openConn();
+
     QString dept = ui->department_input->currentText();
     QString dpci = ui->dpci_input->text();
     QString quantity = ui->quantity_input->text();
@@ -52,7 +56,7 @@ void add_stock_window::on_update_stock_button1_clicked()
        {
            QSqlQuery updateQuery;
            updateQuery.exec("UPDATE stockroom SET Quantity=Quantity+" + quantity + " WHERE DPCI='" + dpci+"'" );
-           qDebug() << "Stock Added to Database";
+           connection.closeConn();
            this->close();
 
        }
@@ -66,7 +70,7 @@ void add_stock_window::on_update_stock_button1_clicked()
             query.bindValue(":quantity", quantity);
             query.bindValue(":location", location);
             query.exec();
-            qDebug() << "Stock Added to Database";
+            connection.closeConn();
             this->close();
        }
     }
