@@ -3,6 +3,7 @@
 #include "stock_portal.h"
 #include <QSqlDatabase>
 #include <QMessageBox>
+#include "login.h"
 
 remove_stock_window::remove_stock_window(QWidget *parent) :
     QDialog(parent),
@@ -18,6 +19,9 @@ remove_stock_window::~remove_stock_window()
 
 void remove_stock_window::on_confirm_remove_button_clicked()
 {
+    login connection;
+    connection.openConn();
+
     QString dpci = ui->remove_dpci_edit->text();
     QString location = ui->remove_loc_edit->text();
     QString dept = ui->remove_dept_input->currentText();
@@ -27,7 +31,7 @@ void remove_stock_window::on_confirm_remove_button_clicked()
     checkQ.exec("SELECT * FROM stockroom WHERE Dept='" + dept + "' AND DPCI='" + dpci + "' AND Location ='" + location+ "'");
     checkQ.next();
     QString quanAmount;
-    quanAmount.append( checkQ.value(2).toString() + " ");
+    quanAmount.append(checkQ.value(2).toString() + " ");
 
     if(dept.isNull())
     {
@@ -37,7 +41,6 @@ void remove_stock_window::on_confirm_remove_button_clicked()
 
     //Check if valid DPCI Code
     //Basic check for now...
-    //TODO: Add regex for checking format
     else if(!dpci.toInt() || dpci.isNull())
     {
        QMessageBox msg;
@@ -71,7 +74,6 @@ void remove_stock_window::on_confirm_remove_button_clicked()
         {
             QSqlQuery removeQuery;
             removeQuery.exec("DELETE from stockroom WHERE Dept='" + dept + "' AND DPCI='" + dpci + "' AND Location ='" + location+ "'");
-            qDebug() << "Stock removed from Database";
 
         }
 
@@ -80,8 +82,6 @@ void remove_stock_window::on_confirm_remove_button_clicked()
         {
             QSqlQuery removeQuery;
             removeQuery.exec("UPDATE stockroom SET Quantity=Quantity-" + removeAmount + " WHERE DPCI='" + dpci +"'");
-            qDebug() << "Stock removed from Database";
-
         }
 
         //Check to see if item exists in replenishment database
@@ -93,7 +93,7 @@ void remove_stock_window::on_confirm_remove_button_clicked()
         {
             QSqlQuery update_replenish;
             update_replenish.exec("UPDATE replenishment SET Quantity=Quantity+" + removeAmount + " WHERE DPCI='" + dpci +"'");
-            qDebug() << "Replenishment database updated";
+            connection.closeConn();
             this->close();
 
         }
@@ -106,7 +106,7 @@ void remove_stock_window::on_confirm_remove_button_clicked()
             add_replenish.bindValue(":dpci", dpci);
             add_replenish.bindValue(":quantity",removeAmount);
             add_replenish.exec();
-            qDebug() << "Item added to Replenishment Database";
+            connection.closeConn();
             this->close();
         }
     }
