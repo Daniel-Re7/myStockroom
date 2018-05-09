@@ -5,8 +5,8 @@ login::login()
     //Setup database server connection
     db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName("localhost");
-    db.setUserName("root");
-    db.setPassword("admin");
+    db.setUserName("");
+    db.setPassword("");
     db.setDatabaseName("stock");
 }
 
